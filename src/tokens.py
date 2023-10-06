@@ -1,3 +1,12 @@
+"""
+    this would be wayyyyyyy better as an Enum instead but I'm not too sure how to nicely do Enums
+    in python with individual attributes unlike in rust where enums can just natively take them
+
+    theres probably a way to do it with a third party version of enums but this is just the first
+    draft of the program, hopefully will be a few more iterations
+"""
+
+
 class Token:
     ...
 
