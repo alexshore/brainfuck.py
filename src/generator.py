@@ -30,7 +30,7 @@ class PythonGenerator(Generator):
                 loop_counter -= 1
                 continue
 
-            code += "    " * loop_counter
+            code += " " * 4 * loop_counter
 
             if isinstance(token, tkns.Repeatable_Token):
                 code += self.code_dict[type(token)].format(token.times)  # type: ignore
@@ -44,29 +44,26 @@ class PythonGenerator(Generator):
 
 
 class RustGenerator(Generator):
-    """IN PROGRESS"""
-
     code_dict = {
-        tkns.Pointer_Right: "pointer += {}\n",
-        tkns.Pointer_Left: "pointer -= {}\n",
-        tkns.Value_Increase: "memory[pointer] += {}\n",
-        tkns.Value_Decrease: "memory[pointer] -= {}\n",
+        tkns.Pointer_Right: "pointer += {};\n",
+        tkns.Pointer_Left: "pointer -= {};\n",
+        tkns.Value_Increase: "memory[pointer] += {};\n",
+        tkns.Value_Decrease: "memory[pointer] -= {};\n",
         tkns.While_Start: "while memory[pointer] > 0 {\n",
         tkns.While_End: "}\n",
         tkns.Char_Get: "{let mut var = String::new(); std::io::stdin().read_line(&mut var); memory[pointer] = var.chars().nth(0).unwrap() as u8}\n",
-        tkns.Char_Put: 'println!("{}", memory[pointer] as char)\n'
+        tkns.Char_Put: 'print!("{}", memory[pointer] as char);\n'
     }
 
     def generate(self, tokens) -> str:
-        loop_counter = 0
-        code = "fn main() {\n"
+        indent_counter = 1
+        code = "fn main() {\n    let mut memory = vec![0u8; 30000];\n    let mut pointer = 0usize;\n"
 
         for token in tokens:
             if isinstance(token, tkns.While_End):
-                loop_counter -= 1
-                continue
+                indent_counter -= 1
 
-            code += "    " * loop_counter
+            code += " " * 4 * indent_counter
 
             if isinstance(token, tkns.Repeatable_Token):
                 code += self.code_dict[type(token)].format(token.times)  # type: ignore
@@ -74,7 +71,7 @@ class RustGenerator(Generator):
                 code += self.code_dict[type(token)]
 
             if isinstance(token, tkns.While_Start):
-                loop_counter += 1
+                indent_counter += 1
 
         return code + "}"
 
